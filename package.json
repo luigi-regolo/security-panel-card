@@ -1,0 +1,11 @@
+{
+  "name": "security-panel-card",
+  "version": "0.1.0-dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/security-panel-card.js && node --check dist/security-panel-card.js",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {"node": ">=20"}
+}
