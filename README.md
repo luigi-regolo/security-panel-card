@@ -8,14 +8,13 @@ Security Panel Card è una custom card per le dashboard Home Assistant, progetta
 
 La card è indipendente dai produttori: utilizza le entità e gli script già configurati in Home Assistant.
 
-## Anteprime
+## Anteprima
 
 <p align="center">
-  <img src="assets/security-panel-dark.png" alt="Security Panel Card — Edera Dark" width="47%" />
-  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light" width="47%" />
+  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light" width="620" />
 </p>
 
-Anteprime dimostrative, senza dati personali o riferimenti a installazioni reali.
+Anteprima dimostrativa con valori fittizi, senza dati di installazioni reali.
 
 ## Funzionalità
 
