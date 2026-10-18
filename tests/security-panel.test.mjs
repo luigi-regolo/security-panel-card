@@ -14,7 +14,7 @@ const context={
 };
 context.globalThis=context;
 vm.createContext(context);
-vm.runInContext(code+'\nglobalThis.__test={spConfig,spEntity,spList,spKnown,spSensorState,spPercent,spStateLabel,spEscape,spPinMake,spPinCheck};',context);
+vm.runInContext(code+'\nglobalThis.__test={spConfig,spEntity,spList,spKnown,spSensorState,spPercent,spStateLabel,spEscape,spPinMake,spPinCheck,spImageUrl,spTimeInfo,spLatestActive,spIcon,spStateIcon};',context);
 const f=context.__test;
 
 test('card and editor register once with correct picker metadata',()=>{
@@ -63,4 +63,75 @@ test('visual confirmation PIN is salted PBKDF2 and not stored in clear',async()=
 });
 test('no untrusted external loading or local persistent storage',()=>{
   assert.ok(!/fetch\(|XMLHttpRequest|localStorage|sessionStorage|https:\/\/[^\s"']+\.js/.test(code));
+});
+
+test('supports image entities for a last snapshot and not camera streams',()=>{
+  const cfg=f.spConfig({image_entity:'image.front_door',camera_entity:'camera.old_stream'});
+  assert.equal(cfg.image_entity,'image.front_door');
+  assert.equal(f.spConfig({image_entity:'camera.stream'}).image_entity,'');
+  assert.match(code, /Entità|Ultima immagine rilevata/);
+  assert.match(code, /connectedCallback\(\)\{this\._lastRender='';this\._paint\(\);\}/);
+});
+test('snapshot URLs must be local relative resources only',()=>{
+  assert.equal(f.spImageUrl({state:'2026-10-18T09:00:00Z',attributes:{entity_picture:'/api/image_proxy/image.front_door?token=xyz'}}),'/api/image_proxy/image.front_door?token=xyz&sp_v=2026-10-18T09%3A00%3A00Z');
+  assert.equal(f.spImageUrl({attributes:{entity_picture:'https://tracker.example.com/image'}}),'');
+  assert.equal(f.spImageUrl({attributes:{entity_picture:'//tracker.example.com/image'}}),'');
+  assert.equal(f.spImageUrl({attributes:{entity_picture:'javascript:alert(1)'}}),'');
+});
+test('history identifies ON transitions and never labels the OFF change as opening',()=>{
+  const from=Date.parse('2026-10-11T00:00:00Z');
+  const history=[[{state:'off',last_changed:'2026-10-11T00:00:01Z'},
+    {state:'on',last_changed:'2026-10-12T08:00:00Z'},
+    {state:'off',last_changed:'2026-10-12T08:00:30Z'},
+    {state:'on',last_changed:'2026-10-13T20:15:00Z'},
+    {state:'off',last_changed:'2026-10-13T20:16:00Z'}]];
+  assert.equal(f.spLatestActive(history,from),'2026-10-13T20:15:00Z');
+  assert.equal(f.spLatestActive([[{state:'off',last_changed:'2026-10-12T08:00:00Z'}]],from),null);
+});
+test('relative time units are automatic and exact date retained',()=>{
+  const now=Date.parse('2026-10-18T12:00:00Z');
+  assert.equal(f.spTimeInfo('2026-10-18T11:54:00Z',now).ago,'6 min fa');
+  assert.equal(f.spTimeInfo('2026-10-18T09:00:00Z',now).ago,'3 ore fa');
+  assert.equal(f.spTimeInfo('2026-10-15T12:00:00Z',now).ago,'3 giorni fa');
+  assert.equal(f.spTimeInfo('non una data',now),null);
+  assert.equal(f.spTimeInfo('2026-10-19T12:00:00Z',now),null);
+});
+test('uses native Home Assistant icons and suppresses entity id in popup text',()=>{
+  assert.match(f.spIcon('motion'),/ha-icon.*mdi:motion-sensor/);
+  assert.match(f.spStateIcon('binary_sensor.window','window'),/ha-state-icon.*binary_sensor.window/);
+  assert.match(code,/data-more-info/);
+  assert.ok(!code.includes('<div class="sp-entity">${spEscape(id)}</div>'));
+});
+
+test('only active Casa/Fuori casa buttons are tinted, alarm body stays neutral',()=>{
+  assert.match(code, /\.sp-mode\.selected\.sp-mode-home\{background:var\(--sp-accent\)/);
+  assert.match(code, /\.sp-mode\.selected\.sp-mode-away\{background:var\(--sp-away\)/);
+  assert.ok(!/\.sp-row\.sp-alarm-(home|away)\s*\{/.test(code));
+  assert.match(code, /state==='armed_home'\?'sp-mode-home'/);
+  assert.match(code, /state==='armed_away'\?'sp-mode-away'/);
+  assert.ok(!code.includes('https://cdn'));
+});
+test('triggered alarm gets a separate red alert only on triggered state',()=>{
+  assert.match(code, /alarmTriggered=aState==='triggered'/);
+  assert.match(code, /\$\{alarmTriggered\?`<section class="sp-trigger-alert"/);
+  assert.match(code, /role="alert" aria-live="polite"/);
+  assert.match(code, /<strong>Allarme scattato<\/strong>/);
+  assert.match(code, /\.sp-row\.sp-alarm-triggered\{border-color:#b83a42/);
+  assert.doesNotMatch(code,/alarmTriggered\|\|sirenState===true\?'sp-alarm-triggered'/);
+});
+
+test('recording remains separately configurable and visible beside last movement',()=>{
+  const cfg=f.spConfig({recording_entity:'binary_sensor.door_recording',recording_active_state:'on',image_entity:'image.frontdoor'});
+  assert.equal(cfg.recording_entity,'binary_sensor.door_recording');
+  assert.match(code,/Stato registrazione \(facoltativo\)/);
+  assert.match(code,/<strong>Stato registrazione<\/strong>/);
+  assert.match(code,/Ultimo movimento rilevato/);
+  assert.match(code,/Ultima immagine rilevata \(image\.\*\)/);
+});
+
+test('PIN configuration fails closed without Web Crypto, never downgraded to plaintext',async()=>{
+  const clean=code.replace('globalThis.crypto?.subtle','globalThis.crypto?.subtle');
+  assert.match(clean,/PIN disponibile solo in una connessione HTTPS affidabile/);
+  assert.match(clean,/lock_pin_enabled.*t.checked.*!globalThis.crypto\?\.subtle/);
+  assert.ok(!/localStorage|sessionStorage/.test(clean));
 });

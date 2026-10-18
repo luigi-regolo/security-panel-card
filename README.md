@@ -8,15 +8,14 @@ Security Panel Card è una custom card per le dashboard Home Assistant, progetta
 
 La card è indipendente dai produttori: utilizza le entità e gli script già configurati in Home Assistant.
 
-> **Stato del progetto:** versione di sviluppo. Il funzionamento con entità reali e l'editor nativo devono ancora essere verificati in Home Assistant. La modalità di controllo dei dispositivi è inizialmente disattivata.
-
 ## Anteprime
 
-| Tema Dark | Tema Light |
-| :---: | :---: |
-| ![Security Panel Dark](assets/security-panel-dark.png) | ![Security Panel Light](assets/security-panel-light.png) |
+<p align="center">
+  <img src="assets/security-panel-dark.png" alt="Security Panel Card — Edera Dark" width="47%" />
+  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light" width="47%" />
+</p>
 
-Le anteprime utilizzano entità dimostrative e non contengono informazioni di installazioni personali.
+Anteprime dimostrative, senza dati personali o riferimenti a installazioni reali.
 
 ## Funzionalità
 
@@ -27,6 +26,7 @@ Le anteprime utilizzano entità dimostrative e non contengono informazioni di in
 - Richiesta del codice allarme, quando necessaria.
 - Visualizzazione dello stato della sirena.
 - Monitoraggio dello stato della centrale, se disponibile.
+- Avviso rosso **Allarme scattato** solo quando il pannello segnala effettivamente `triggered`; nessun comando automatico viene eseguito.
 
 ### Videosorveglianza
 
@@ -51,7 +51,8 @@ Se non viene configurato un sensore di stato, la card mostra entrambi i comandi 
 
 - Stato aperto o chiuso della porta.
 - Conteggio delle finestre aperte e chiuse.
-- Apertura dei dettagli delle singole entità.
+- Apertura dei dettagli delle singole entità, con nomi leggibili senza ID tecnici.
+- Ultima apertura in minuti/ore/giorni e data esatta quando la cronologia Home Assistant è disponibile.
 - Evidenziazione degli stati attivi con il verde Edera.
 - Segnalazione dei sensori non disponibili, senza considerarli chiusi.
 
@@ -64,22 +65,21 @@ Se non viene configurato un sensore di stato, la card mostra entrambi i comandi 
 
 ### Spioncino digitale
 
-- Collegamento a un'entità videocamera.
-- Apertura dei dettagli video di Home Assistant.
+- Ultima fotografia tramite entità `image.*` (senza flusso videocamera).
+- Visualizzazione dello snapshot usando la risorsa locale di Home Assistant.
 - Percentuale della batteria, se disponibile.
-- Stato registrazione, se esposto dall'integrazione.
-- Indicazione del movimento davanti alla porta.
-- Indicazione del rilevamento persone, quando supportato.
-- Visualizzazione facoltativa dell'ultimo evento.
+- Ultimo movimento rilevato, ricavato dal sensore dedicato e dalla cronologia, quando disponibile.
+- Stato registrazione facoltativo (In registrazione/Non in registrazione/Non disponibile), senza deduzioni basate sul movimento.
+- Etichetta **Batteria** accanto alla percentuale.
 - Nome personalizzabile dell'area monitorata.
 
-Il rilevamento di una persona richiede un'entità dedicata. Un semplice sensore di movimento non consente di identificare automaticamente una presenza umana. Gli stati di movimento in corso e ultimo evento sono distinti.
+L'ultima rilevazione di movimento è mostrata soltanto se esiste un timestamp attendibile (entità opzionale o cronologia disponibile). Non viene inferita automaticamente una persona dal movimento.
 
 ## Design Edera
 
 Security Panel Card offre tre modalità: **Auto** (segue Home Assistant), **Light** (fondo chiaro e riquadri grigio-verde), **Dark** (fondo quasi nero e riquadri antracite).
 
-Gli elementi utilizzano bordi arrotondati, icone compatte e tipografia coerente con Home Assistant. Gli stati attivi possono essere evidenziati con un verde Edera pieno. Le condizioni critiche, come un allarme scattato, mantengono una segnalazione distinta. Le animazioni sono facoltative e rispettano le preferenze di movimento ridotto del dispositivo.
+Gli elementi utilizzano bordi arrotondati, icone native Material Design Icons di Home Assistant e tipografia coerente con Home Assistant. Gli stati attivi possono essere evidenziati con un verde Edera pieno. Nella sezione allarme **solo il pulsante selezionato** cambia colore: Disinserito neutro, Casa verde Edera e Fuori casa blu petrolio. Il contenitore dell’allarme resta neutro. Il rosso compare soltanto quando l’entità `alarm_control_panel` segnala lo stato `triggered`: appare un avviso ben visibile **«Allarme scattato»**, senza attribuire cause o identificare sensori non verificati. Finestre aperte e sensori di movimento attivi rimangono verdi Edera, non rossi. Le animazioni sono facoltative e rispettano le preferenze di movimento ridotto del dispositivo.
 
 ## Configurazione visuale
 
@@ -114,7 +114,7 @@ Il pulsante apre la procedura in Home Assistant attraverso My Home Assistant. L'
 
 Se la risorsa non viene registrata automaticamente, verificare nelle risorse della dashboard che sia presente il modulo `/hacsfiles/security-panel-card/security-panel-card.js`.
 
-Queste istruzioni verranno validate in una prova di installazione dopo la pubblicazione. Il repository personalizzato HACS non implica l'inclusione nel catalogo ufficiale HACS.
+Queste istruzioni verranno validate nella prova di aggiornamento in Home Assistant. Il repository personalizzato HACS non implica l'inclusione nel catalogo ufficiale HACS.
 
 ## Sicurezza e privacy
 
@@ -127,7 +127,7 @@ Security Panel Card utilizza le entità, le autorizzazioni e i servizi disponibi
 - Non sono presenti telemetria, pubblicità, servizi di analisi o dipendenze JavaScript remote nella card.
 - I dispositivi e le loro integrazioni possono utilizzare servizi cloud indipendenti dalla card.
 
-**Security Panel Card non è un sistema antintrusione certificato.** La sicurezza effettiva dipende dalle autorizzazioni Home Assistant, dal pannello allarme e dai dispositivi integrati. Il codice sorgente è fornito senza garanzie aggiuntive rispetto a quanto previsto dalla licenza.
+**Security Panel Card non è un sistema antintrusione certificato.** La sicurezza effettiva dipende dalle autorizzazioni Home Assistant, dal pannello allarme e dai dispositivi integrati. La consultazione degli orari storici usa solo la cronologia locale di Home Assistant quando viene aperto il dettaglio; non contatta servizi esterni. Il Recorder conserva per impostazione predefinita 10 giorni di cronologia dettagliata e può escludere entità. Il codice sorgente è fornito senza garanzie aggiuntive rispetto a quanto previsto dalla licenza.
 
 ## Compatibilità
 
