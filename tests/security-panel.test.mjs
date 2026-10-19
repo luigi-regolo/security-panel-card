@@ -198,7 +198,7 @@ test('native MDI glyph aligns with button text via matching icon size',()=>{
 });
 
 test('door and windows tiles share the same height with motion and camera tiles',()=>{
-  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:9px\}/);
+  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:12px\}/);
   assert.match(code,/\.sp-sensor\{width:100%;text-align:left;min-width:0;/);
   assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
 });
@@ -241,9 +241,19 @@ test('sensor titles and status wrap instead of being ellipsized on narrow phones
   assert.doesNotMatch(code,/\.sp-sensor \.sp-sub\{[^}]*text-overflow:ellipsis/);
 });
 test('all four sensor badges share spacing while neutral badges never use accent green',()=>{
-  assert.match(code,/\.sp-detail-badge\{[^}]*min-height:40px/);
+  assert.doesNotMatch(code,/\.sp-detail-badge\{[^}]*min-height:40px/);
   assert.match(code,/\.sp-detail-badge\{[^}]*border-radius:999px/);
   assert.match(code,/\.sp-detail-badge\{[^}]*background:var\(--sp-button\);color:var\(--sp-text\)/);
   assert.match(code,/\.sp-camera-badge\{background:var\(--sp-accent\);color:#fff\}/);
   assert.ok(code.includes('.sp-detail-badge{font-size:10px;padding:5px 8px}'));
+});
+
+test('security tiles use camera-grid sizing without changing content or behavior',()=>{
+  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:12px\}/);
+  assert.match(code,/\.sp-sensor\{[^}]*padding:7px 10px;border-radius:24px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:2px;min-height:82px/);
+  assert.ok(code.includes('.sp-sensor{padding:7px 8px;gap:2px;min-height:77px}'));
+  assert.match(code,/\.sp-detail-badge\{[^}]*gap:5px;padding:5px 9px;max-width:100%/);
+  assert.doesNotMatch(code,/\.sp-detail-badge\{[^}]*min-height:/);
+  assert.match(code,/detailLabels=\{door:'Dettagli porta',windows:'Dettagli finestre',motion:'Dettagli movimento',camera:'Apri dettagli immagini'\}/);
+  assert.match(code,/data-action="detail-\$\{k\}"/);
 });
