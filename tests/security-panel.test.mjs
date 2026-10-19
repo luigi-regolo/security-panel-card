@@ -213,3 +213,20 @@ test('Spioncino shows a green image details badge inside its clickable tile',()=
   assert.match(code,/if\(group==='camera'\)\{/);
   assert.ok(!code.includes('<button class="sp-camera-badge"'));
 });
+
+test('all sensor tiles use the Spioncino shape and a shared content row',()=>{
+  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr/);
+  assert.match(code,/\.sp-sensor\{[^}]*border-radius:24px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between/);
+  assert.match(code,/const display=\(k,name,icon,text,highlight=false,entityId=''\)=>/);
+  assert.match(code,/<span class="sp-sensor-main"><span class="sp-sensor-orb">/);
+  assert.ok(!code.includes("camera?'<span"));
+  assert.match(code,/camera\?\x60<span class="sp-camera-badge">/);
+  assert.match(code,/\.sp-sensor-main>\.sp-icon:last-child\{width:14px/);
+});
+test('only Spioncino has image badge; popup full-width action matches camera card icon and label',()=>{
+  assert.match(code,/info:'information-outline', expand:'arrow-expand'/);
+  assert.match(code,/camera\?\x60<span class="sp-camera-badge">\$\{spIcon\('info'\)\}Apri dettagli immagini/);
+  assert.match(code,/data-more-info="\$\{spEscape\(cfg.image_entity\)\}">\$\{spIcon\('expand'\)\}Apri dettagli immagini<\/button>/);
+  assert.match(code,/\.sp-wide \.sp-icon\{width:18px;height:18px;--mdc-icon-size:18px;margin-right:7px;color:#fff\}/);
+  assert.doesNotMatch(code,/>Dettagli immagine<\/button>/);
+});
