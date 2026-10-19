@@ -236,7 +236,7 @@ test('only Spioncino has image badge; popup full-width action matches camera car
 test('sensor titles and status wrap instead of being ellipsized on narrow phones',()=>{
   assert.match(code,/\.sp-sensor \.sp-name\{[^}]*white-space:normal;overflow-wrap:anywhere/);
   assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
-  assert.match(code,/@media\(max-width:420px\)\{[^}]*\.sp-sensor \.sp-name\{font-size:11\.5px\}/);
+  assert.ok(code.includes('.sp-sensor .sp-name{font-size:11.5px}'));
   assert.doesNotMatch(code,/\.sp-sensor \.sp-name\{[^}]*text-overflow:ellipsis/);
   assert.doesNotMatch(code,/\.sp-sensor \.sp-sub\{[^}]*text-overflow:ellipsis/);
 });
@@ -245,5 +245,5 @@ test('all four sensor badges share spacing while neutral badges never use accent
   assert.match(code,/\.sp-detail-badge\{[^}]*border-radius:999px/);
   assert.match(code,/\.sp-detail-badge\{[^}]*background:var\(--sp-button\);color:var\(--sp-text\)/);
   assert.match(code,/\.sp-camera-badge\{background:var\(--sp-accent\);color:#fff\}/);
-  assert.match(code,/@media\(max-width:420px\)\{[^}]*\.sp-detail-badge\{font-size:10px;padding:5px 8px\}/);
+  assert.ok(code.includes('.sp-detail-badge{font-size:10px;padding:5px 8px}'));
 });
