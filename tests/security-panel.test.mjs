@@ -202,3 +202,14 @@ test('door and windows tiles share the same height with motion and camera tiles'
   assert.match(code,/\.sp-sensor\{width:100%;text-align:left;min-width:0;/);
   assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*overflow:hidden;text-overflow:ellipsis;white-space:nowrap/);
 });
+
+test('Spioncino shows a green image details badge inside its clickable tile',()=>{
+  assert.match(code,/info:'information-outline'/);
+  assert.match(code,/\.sp-camera-badge\{[^}]*background:var\(--sp-accent\);color:#fff/);
+  assert.match(code,/const camera=k==='camera'/);
+  assert.match(code,/data-action="detail-\$\{k\}"/);
+  assert.match(code,/spIcon\('info'\)\}Apri dettagli immagini/);
+  assert.match(code,/camera\?'Apri dettagli immagini':'Visualizza dettagli'/);
+  assert.match(code,/if\(group==='camera'\)\{/);
+  assert.ok(!code.includes('<button class="sp-camera-badge"'));
+});
