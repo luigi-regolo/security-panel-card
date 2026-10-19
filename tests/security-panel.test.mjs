@@ -200,16 +200,18 @@ test('native MDI glyph aligns with button text via matching icon size',()=>{
 test('door and windows tiles share the same height with motion and camera tiles',()=>{
   assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:9px\}/);
   assert.match(code,/\.sp-sensor\{width:100%;text-align:left;min-width:0;/);
-  assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*overflow:hidden;text-overflow:ellipsis;white-space:nowrap/);
+  assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
 });
 
-test('Spioncino shows a green image details badge inside its clickable tile',()=>{
+test('all sensor tiles show correctly labeled badges and only Spioncino is green',()=>{
   assert.match(code,/info:'information-outline'/);
-  assert.match(code,/\.sp-camera-badge\{[^}]*background:var\(--sp-accent\);color:#fff/);
-  assert.match(code,/const camera=k==='camera'/);
+  assert.match(code,/\.sp-detail-badge\{[^}]*background:var\(--sp-button\);color:var\(--sp-text\)/);
+  assert.match(code,/\.sp-camera-badge\{background:var\(--sp-accent\);color:#fff\}/);
+  assert.match(code,/\.sp-detail-badge \.sp-icon\{width:14px;height:14px/);
+  assert.match(code,/detailLabels=\{door:'Dettagli porta',windows:'Dettagli finestre',motion:'Dettagli movimento',camera:'Apri dettagli immagini'\}/);
+  assert.match(code,/sp-detail-badge \$\{camera\?'sp-camera-badge':'sp-neutral-badge'\}/);
   assert.match(code,/data-action="detail-\$\{k\}"/);
-  assert.match(code,/spIcon\('info'\)\}Apri dettagli immagini/);
-  assert.match(code,/camera\?'Apri dettagli immagini':'Visualizza dettagli'/);
+  assert.match(code,/\$\{spIcon\('info'\)\}\$\{detailLabel\}<\/span><\/button>/);
   assert.match(code,/if\(group==='camera'\)\{/);
   assert.ok(!code.includes('<button class="sp-camera-badge"'));
 });
@@ -220,13 +222,28 @@ test('all sensor tiles use the Spioncino shape and a shared content row',()=>{
   assert.match(code,/const display=\(k,name,icon,text,highlight=false,entityId=''\)=>/);
   assert.match(code,/<span class="sp-sensor-main"><span class="sp-sensor-orb">/);
   assert.ok(!code.includes("camera?'<span"));
-  assert.match(code,/camera\?\x60<span class="sp-camera-badge">/);
+  assert.match(code,/sp-detail-badge \$\{camera\?'sp-camera-badge':'sp-neutral-badge'\}/);
   assert.match(code,/\.sp-sensor-main>\.sp-icon:last-child\{width:14px/);
 });
 test('only Spioncino has image badge; popup full-width action matches camera card icon and label',()=>{
   assert.match(code,/info:'information-outline', expand:'arrow-expand'/);
-  assert.match(code,/camera\?\x60<span class="sp-camera-badge">\$\{spIcon\('info'\)\}Apri dettagli immagini/);
+  assert.match(code,/sp-detail-badge \$\{camera\?'sp-camera-badge':'sp-neutral-badge'\}/);
   assert.match(code,/data-more-info="\$\{spEscape\(cfg.image_entity\)\}">\$\{spIcon\('expand'\)\}Apri dettagli immagini<\/button>/);
   assert.match(code,/\.sp-wide \.sp-icon\{width:18px;height:18px;--mdc-icon-size:18px;margin-right:7px;color:#fff\}/);
   assert.doesNotMatch(code,/>Dettagli immagine<\/button>/);
+});
+
+test('sensor titles and status wrap instead of being ellipsized on narrow phones',()=>{
+  assert.match(code,/\.sp-sensor \.sp-name\{[^}]*white-space:normal;overflow-wrap:anywhere/);
+  assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
+  assert.match(code,/@media\(max-width:420px\)\{[^}]*\.sp-sensor \.sp-name\{font-size:11\.5px\}/);
+  assert.doesNotMatch(code,/\.sp-sensor \.sp-name\{[^}]*text-overflow:ellipsis/);
+  assert.doesNotMatch(code,/\.sp-sensor \.sp-sub\{[^}]*text-overflow:ellipsis/);
+});
+test('all four sensor badges share spacing while neutral badges never use accent green',()=>{
+  assert.match(code,/\.sp-detail-badge\{[^}]*min-height:40px/);
+  assert.match(code,/\.sp-detail-badge\{[^}]*border-radius:999px/);
+  assert.match(code,/\.sp-detail-badge\{[^}]*background:var\(--sp-button\);color:var\(--sp-text\)/);
+  assert.match(code,/\.sp-camera-badge\{background:var\(--sp-accent\);color:#fff\}/);
+  assert.match(code,/@media\(max-width:420px\)\{[^}]*\.sp-detail-badge\{font-size:10px;padding:5px 8px\}/);
 });
