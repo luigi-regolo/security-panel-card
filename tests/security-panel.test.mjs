@@ -196,3 +196,9 @@ test('native MDI glyph aligns with button text via matching icon size',()=>{
   assert.match(code,/\.sp-button \.sp-icon\{width:16px;height:16px;--mdc-icon-size:16px\}/);
   assert.match(code,/\.sp-button\{[^}]*align-items:center;justify-content:center/);
 });
+
+test('door and windows tiles share the same height with motion and camera tiles',()=>{
+  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:9px\}/);
+  assert.match(code,/\.sp-sensor\{width:100%;text-align:left;min-width:0;/);
+  assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*overflow:hidden;text-overflow:ellipsis;white-space:nowrap/);
+});
