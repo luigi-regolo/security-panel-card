@@ -1,156 +1,196 @@
-[![TikTok | Segui](assets/tiktok-segui.svg)](https://www.tiktok.com/@luigi.regolo)
-
 # Security Panel Card
 
-**Un pannello di sicurezza moderno per Home Assistant**, che riunisce allarme, videosorveglianza, serratura intelligente, porte, finestre, sensori di movimento e spioncino digitale in un'unica scheda.
+[![TikTok | Segui](assets/tiktok-segui.svg)](https://www.tiktok.com/@luigi.regolo)
+[![Latest Release](https://img.shields.io/github/v/release/luigi-regolo/security-panel-card?style=flat-square&label=release)](https://github.com/luigi-regolo/security-panel-card/releases/latest)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue?style=flat-square)](LICENSE)
+[![HACS Custom Repository](https://img.shields.io/badge/HACS-Custom%20Repository-41BDF5?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luigi-regolo&repository=security-panel-card&category=plugin)
+[![GitHub Stars](https://img.shields.io/github/stars/luigi-regolo/security-panel-card?style=flat-square)](https://github.com/luigi-regolo/security-panel-card/stargazers)
 
-Security Panel Card è una custom card per le dashboard Home Assistant, progettata con un'interfaccia minimal, controlli intuitivi e una grafica adattiva ispirata ai temi Edera Light e Dark.
+## Overview
 
-La card è indipendente dai produttori: utilizza le entità e gli script già configurati in Home Assistant.
+**Security Panel Card** is a custom security dashboard card for Home Assistant, designed with a minimalist, responsive interface inspired by the Edera Light and Dark visual styles.
 
-## Anteprima
+It brings together alarm controls, video surveillance, smart locks, doors, windows, motion sensors, and digital peephole information in a single dashboard card.
+
+The card uses entities and services already configured in Home Assistant. It is not tied to a specific device manufacturer and does not require a dedicated account, paid API, or subscription.
+
+## Preview
 
 <p align="center">
-  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light" width="620" />
+  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light preview" width="620" />
 </p>
 
-Anteprima dimostrativa con valori fittizi, senza dati di installazioni reali.
+*Security Panel Card in Edera Light mode. The preview uses demonstration values and does not display private installation data.*
 
-## Funzionalità
+## Features
 
-### Allarme
+- **Alarm control:** Arm Home or Away, disarm, display the current alarm state, and request an alarm code when required by the integration.
+- **Alarm history:** View the most recent confirmed triggered event found in the available Home Assistant history, including its date and time.
+- **Siren status:** Monitor an optional siren entity. Separate manual siren control can be enabled for a supported `siren.*` or `switch.*` entity, with confirmation before activation.
+- **Control panel status:** Display an optional status entity for the security system.
+- **Video surveillance:** Run separate Home Assistant scripts to enable or disable an NVR, with optional independent status monitoring.
+- **Smart lock:** Display lock status, optional battery information, and lock/unlock controls with optional confirmation or visual PIN.
+- **Doors and windows:** Monitor opening states, count open and closed windows, and inspect individual sensors.
+- **Motion sensors:** Display movement detected by configured sensors without automatically executing commands.
+- **Digital peephole:** Show the latest image from an `image.*` entity, optional battery level, recording status, and available movement information.
+- **Edera appearance:** Automatic, Light, and Dark themes, rounded elements, native Home Assistant icons, and responsive layouts.
+- **Visual configuration:** Configure supported entities, display options, and optional features through the dashboard editor.
 
-- Inserimento in modalità Casa o Fuori casa, se supportato dall'entità `alarm_control_panel`.
-- Disinserimento tramite pannello di controllo.
-- Richiesta del codice allarme, quando necessaria.
-- Visualizzazione dello stato della sirena.
-- Monitoraggio dello stato della centrale, se disponibile.
-- Consultazione dell’**ultimo allarme scattato** in un popup dedicato, con data e ora tratte dalla cronologia di Home Assistant (se disponibile).
-- **Controllo manuale della sirena facoltativo**, tramite un’entità `siren.*` o `switch.*` selezionata separatamente da quella dello stato. L’accensione richiede una conferma esplicita; nessuna sirena viene attivata automaticamente.
-- Avviso rosso **Allarme scattato** solo quando il pannello segnala effettivamente `triggered`; nessun comando automatico viene eseguito.
+Alarm-triggered warnings are shown in red only when the alarm panel reports `triggered`. Active window and motion sensor states use the Edera green styling.
 
-### Videosorveglianza
+Missing or unavailable entity information is not treated as a confirmed safe state.
 
-- Attivazione tramite script Home Assistant.
-- Disattivazione tramite script indipendente.
-- Visualizzazione facoltativa dello stato effettivo dell'NVR.
+## Installation
 
-Se non viene configurato un sensore di stato, la card mostra entrambi i comandi senza presumere che il registratore sia acceso o spento. Un comando inviato non equivale alla conferma del suo completamento.
+### HACS — Custom repository
 
-### Serratura intelligente
+Security Panel Card can be installed through HACS by adding its GitHub repository as a custom dashboard repository.
 
-- Visualizzazione dello stato bloccata/sbloccata.
-- Comandi di blocco e sblocco.
-- Percentuale batteria, quando disponibile.
-- Sblocco diretto con conferma facoltativa.
-- Tastierino PIN visuale opzionale.
-- Richiesta del PIN corrente nell'editor per modificarlo o disattivarlo.
+[![Open Security Panel Card in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luigi-regolo&repository=security-panel-card&category=plugin)
 
-**Importante:** il PIN visuale è una conferma nel browser, non un sistema di autenticazione o controllo accessi. Un utente già autorizzato a usare i servizi Home Assistant può aggirarlo utilizzando altre interfacce. Non affidarsi a questa funzione per proteggere fisicamente una porta.
+1. Open **HACS** in Home Assistant.
+2. Open the HACS menu and select **Custom repositories**.
+3. Enter the repository URL:
 
-### Porte e finestre
+   `https://github.com/luigi-regolo/security-panel-card`
 
-- Stato aperto o chiuso della porta.
-- Conteggio delle finestre aperte e chiuse.
-- Apertura dei dettagli delle singole entità, con nomi leggibili senza ID tecnici.
-- Ultima apertura in minuti/ore/giorni e data esatta quando la cronologia Home Assistant è disponibile.
-- Evidenziazione degli stati attivi con il verde Edera.
-- Segnalazione dei sensori non disponibili, senza considerarli chiusi.
+4. Select **Dashboard** as the repository category and add it.
+5. Find **Security Panel Card** in HACS and download it.
+6. Reload the Home Assistant dashboard if necessary.
+7. Add the card to your dashboard and configure it through the visual editor.
 
-### Sensori di movimento
+The repository includes `hacs.json` and the distributable module `dist/security-panel-card.js`.
 
-- Monitoraggio di uno o più sensori volumetrici.
-- Indicazione del movimento rilevato.
-- Elenco dei sensori configurati.
-- Funzionamento esclusivamente in lettura.
+### Manual installation
 
-### Spioncino digitale
+1. Download `dist/security-panel-card.js` from this repository.
+2. Copy the JavaScript file to the `www` directory of your Home Assistant configuration.
+3. In Home Assistant, open **Settings → Dashboards → Resources**.
+4. Add `/local/security-panel-card.js` as a **JavaScript module**.
+5. Reload the dashboard and add the custom card.
 
-- Ultima fotografia tramite entità `image.*` (senza flusso videocamera).
-- Visualizzazione dello snapshot usando la risorsa locale di Home Assistant.
-- Percentuale della batteria, se disponibile.
-- Ultimo movimento rilevato, ricavato dal sensore dedicato e dalla cronologia, quando disponibile.
-- Stato registrazione facoltativo (In registrazione/Non in registrazione/Non disponibile), senza deduzioni basate sul movimento.
-- Etichetta **Batteria** accanto alla percentuale.
-- Nome personalizzabile dell'area monitorata.
+If the `www` directory was newly created, Home Assistant may require a restart before the file is accessible.
 
-L'ultima rilevazione di movimento è mostrata soltanto se esiste un timestamp attendibile (entità opzionale o cronologia disponibile). Non viene inferita automaticamente una persona dal movimento.
+## Configuration and Usage
 
-## Design Edera
+### Visual editor
 
-Security Panel Card offre tre modalità: **Auto** (segue Home Assistant), **Light** (fondo chiaro e riquadri grigio-verde), **Dark** (fondo quasi nero e riquadri antracite).
+Open a dashboard in edit mode, add **Security Panel Card**, and configure the available sections:
 
-Gli elementi utilizzano bordi arrotondati, icone native Material Design Icons di Home Assistant e tipografia coerente con Home Assistant. **Il titolo e il punto verde Edera restano gli elementi identificativi della card**, mentre i testi interni usano pesi più leggeri. Gli stati attivi possono essere evidenziati con un verde Edera pieno. Nella sezione allarme **solo il pulsante selezionato** cambia colore: Disinserito neutro, Casa verde Edera e Fuori casa blu petrolio. Il contenitore dell’allarme resta neutro. Il rosso compare soltanto quando l’entità `alarm_control_panel` segnala lo stato `triggered`: appare un avviso ben visibile **«Allarme scattato»**, senza attribuire cause o identificare sensori non verificati. Finestre aperte e sensori di movimento attivi rimangono verdi Edera, non rossi. Le animazioni sono facoltative e rispettano le preferenze di movimento ridotto del dispositivo.
+- **Alarm:** Alarm panel entity, optional siren and control panel status, and alarm code options.
+- **Video Surveillance:** Activation and deactivation scripts, optional NVR status entity, and expected active state.
+- **Smart Lock:** Lock entity, battery sensor, confirmation behavior, and optional visual PIN.
+- **Sensors:** Door, windows, motion sensors, and digital peephole entities.
+- **Appearance:** Card title, display names, Edera theme, and visual state highlighting.
+- **Advanced:** Real command permissions and optional attention animations.
 
-## Configurazione visuale
+The editor uses native Home Assistant entity selectors where available. Entities can be cleared individually, and configured window or motion sensor rows can be removed separately.
 
-La card dispone di un editor grafico organizzato in sei sezioni:
+No YAML configuration is required for normal setup.
 
-| Sezione | Configurazione |
-| --- | --- |
-| Allarme | Pannello, stato sirena, comando sirena facoltativo, centrale e richiesta codice |
-| Videosorveglianza | Script attivazione, script disattivazione e stato NVR |
-| Serratura | Entità `lock`, batteria e conferma PIN |
-| Sensori | Porta, finestre, volumetrico e spioncino |
-| Aspetto | Titolo, tema ed evidenziazione degli stati |
-| Avanzate | Abilitazione comandi e animazioni |
+### Example YAML configuration
 
-Le entità vengono selezionate dall'installazione Home Assistant tramite l'editor visuale, senza configurazione YAML obbligatoria. Le entità singole possono essere rimosse con il pulsante **X** vicino al selettore; nelle liste di finestre e sensori ogni riga ha una X dedicata. Le funzionalità aggiuntive sono facoltative: ogni utente può mostrare soltanto gli elementi desiderati.
+```yaml
+type: custom:security-panel-card
+theme_mode: auto
+alarm_entity: alarm_control_panel.example
+controls_enabled: false
+```
 
-### Abilitazione dei comandi reali
+Replace `alarm_control_panel.example` with an actual alarm panel entity from your Home Assistant installation.
 
-Per sicurezza, la card parte in modalità **sola lettura**. Per utilizzare i comandi dopo aver controllato che le entità siano corrette:
+This example keeps all real commands disabled.
 
-1. Aprire la dashboard in modalità modifica e selezionare **Modifica scheda** per Security Panel Card.
-2. Nell'editor aprire la sezione **Avanzate**.
-3. Attivare **Abilita i comandi reali** e salvare la card.
-4. Verificare il funzionamento dei comandi desiderati, con cautela.
+### Main configuration options
 
-I comandi non si eseguono da soli e richiedono i permessi Home Assistant già esistenti. **Per usare anche la sirena manuale**, aprire **Allarme → Altre opzioni**, abilitare *Consenti controllo manuale sirena* e scegliere una specifica entità comandabile `siren.*` o `switch.*`. Attivare i comandi reali non abilita automaticamente la sirena manuale. Il comando *Attiva sirena* richiede conferma, mentre il comando *Spegni sirena* è disponibile quando la sirena è accesa. Un sensore `binary_sensor.*` mostra soltanto lo stato e non permette di comandare la sirena.
+| Option | Description |
+|---|---|
+| `theme_mode` | `auto`, `light`, or `dark`. |
+| `title` | Main card title. |
+| `alarm_entity` | Home Assistant alarm control panel entity. |
+| `nvr_on_script` / `nvr_off_script` | Optional NVR activation and deactivation scripts. |
+| `nvr_state_entity` | Optional independent NVR status entity. |
+| `lock_entity` | Smart lock entity. |
+| `lock_battery_entity` | Optional lock battery sensor. |
+| `door_entity` | Optional door contact sensor. |
+| `windows` / `motion` | Lists of window and motion sensors. |
+| `image_entity` | Digital peephole's latest image entity. |
+| `recording_entity` | Optional independent recording status entity. |
+| `controls_enabled` | Enables real commands; disabled by default. |
+| `siren_manual_enabled` | Optional manual siren control, separately configured. |
+| `alert_animation` | Optional attention animations. |
 
-## Installazione tramite HACS
+Additional settings are available in the visual editor.
 
-Security Panel Card si installa tramite HACS, aggiungendo il repository come archivio personalizzato. Non è necessario copiare manualmente il JavaScript in Home Assistant.
+### Enabling real commands
 
-[![Apri Security Panel Card in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luigi-regolo&repository=security-panel-card&category=plugin)
+**Security Panel Card operates in read-only mode by default.**
 
-Il pulsante apre la procedura in Home Assistant attraverso My Home Assistant. L'aggiunta dell'archivio e l'installazione richiedono comunque la conferma dell'utente; il pulsante non significa che la card sia presente nel catalogo predefinito HACS.
+To enable supported controls:
 
-1. Aprire HACS in Home Assistant.
-2. Selezionare il menu **⋮ → Archivi personalizzati**.
-3. Inserire il repository: `https://github.com/luigi-regolo/security-panel-card`.
-4. Selezionare la categoria **Dashboard**.
-5. Aggiungere l'archivio e installare Security Panel Card.
-6. Ricaricare la pagina di Home Assistant.
-7. Aggiungere Security Panel Card alla dashboard e configurare le entità dall'editor grafico.
+1. Open the dashboard editor and select Security Panel Card.
+2. Open **Advanced** (`Avanzate`).
+3. Enable **Real Commands** (`Abilita i comandi reali`).
+4. Verify the selected entities before using any command.
 
-Se la risorsa non viene registrata automaticamente, verificare nelle risorse della dashboard che sia presente il modulo `/hacsfiles/security-panel-card/security-panel-card.js`.
+These settings do not grant additional Home Assistant permissions.
 
-Queste istruzioni verranno validate nella prova di aggiornamento in Home Assistant. Il repository personalizzato HACS non implica l'inclusione nel catalogo ufficiale HACS.
+Manual siren control must also be enabled separately under **Alarm → More options**, with a supported controllable entity selected. Activating the siren requires explicit confirmation.
 
-## Sicurezza e privacy
+### Optional visual lock PIN
 
-Security Panel Card utilizza le entità, le autorizzazioni e i servizi disponibili in Home Assistant.
+The lock PIN is an optional browser-side confirmation feature.
 
-- I comandi reali sono disabilitati per impostazione predefinita.
-- Nessuna password amministratore Home Assistant viene richiesta o memorizzata dalla card.
-- Il codice dell'allarme viene inserito al momento dell'utilizzo e inviato all'integrazione, senza salvarlo nella configurazione.
-- Il PIN visuale della serratura non viene salvato in chiaro: viene conservato un valore derivato con salt, ma la verifica resta locale al browser ed è aggirabile da utenti Home Assistant già autorizzati.
-- Non sono presenti telemetria, pubblicità, servizi di analisi o dipendenze JavaScript remote nella card.
-- I dispositivi e le loro integrazioni possono utilizzare servizi cloud indipendenti dalla card.
+When enabled, a salted PBKDF2-SHA256 derived value is stored instead of the plaintext PIN. Secure browser cryptographic functionality is required.
 
-**Security Panel Card non è un sistema antintrusione certificato.** La sicurezza effettiva dipende dalle autorizzazioni Home Assistant, dal pannello allarme e dai dispositivi integrati. La consultazione dell’ultimo allarme e degli orari storici usa solo la cronologia locale di Home Assistant quando viene aperto il dettaglio; non contatta servizi esterni. Il Recorder conserva per impostazione predefinita 10 giorni di cronologia dettagliata e può escludere entità. Il codice sorgente è fornito senza garanzie aggiuntive rispetto a quanto previsto dalla licenza.
+**Important:** The visual PIN is not an authentication system and must not be relied upon for physical access security. Users already authorized to control the lock through Home Assistant may use other interfaces or services.
 
-## Compatibilità
+## Compatibility and Requirements
 
-La card utilizza domini Home Assistant standard, tra cui `alarm_control_panel`, `script`, `lock`, `siren`, `switch`, `image`, `binary_sensor`, `sensor`, e le entità compatibili effettivamente disponibili nella tua istanza. Nessun produttore è obbligatorio. Alcuni stati potrebbero non essere esposti dall'integrazione usata.
+Security Panel Card requires:
 
-## Segnalazioni e contributi
+- Home Assistant with support for custom JavaScript dashboard cards.
+- Compatible Home Assistant entities for the functions being configured.
+- HACS only when using the HACS installation method.
 
-Problemi e suggerimenti possono essere condivisi tramite la sezione Issues del repository GitHub.
+Supported entity domains include `alarm_control_panel`, `script`, `lock`, `siren`, `switch`, `image`, `binary_sensor`, and `sensor`, along with other compatible entities supported by individual settings.
 
-Prima di pubblicare screenshot, log o configurazioni, rimuovere credenziali, PIN, token, identificativi personali, indirizzi e altri dati privati.
+Optional historical information requires accessible Home Assistant history/Recorder data. Historical results depend on retention settings, entity exclusions, and available records.
 
-## Licenza
+No specific minimum Home Assistant version has been independently verified for this repository.
 
-**GNU GPL-3.0-only.** Vedere il file [LICENSE](LICENSE).
+The card does not require a dedicated paid service or additional remote JavaScript libraries.
+
+## Privacy and Security
+
+Security Panel Card operates through Home Assistant entities, services, and the permissions of the authenticated user.
+
+- Real commands are disabled by default.
+- Alarm codes are requested when needed and are not stored in the card configuration.
+- No Home Assistant administrator password is requested by the card.
+- The optional lock PIN provides only local interface confirmation.
+- The card does not include advertising, analytics, telemetry, or user-tracking services.
+- Camera and sensor information is obtained through Home Assistant.
+- Device integrations may independently communicate with their manufacturers' cloud services.
+
+**Security Panel Card is not a certified intrusion detection or access control system.** Its security depends on Home Assistant permissions, configured integrations, and the connected devices.
+
+Unknown, unavailable, or missing information must not be interpreted as confirmation that a property or device is secure.
+
+## Releases
+
+Published versions are available through [GitHub Releases](https://github.com/luigi-regolo/security-panel-card/releases).
+
+The release badge at the top of this README links to the latest published version.
+
+## Copyright & License
+
+Copyright © 2026 luigi-regolo.
+
+Original project created and maintained by **luigi-regolo**.
+
+Licensed under the **GNU General Public License version 3 only (GPL-3.0-only)**.
+
+See the [LICENSE](LICENSE) file for the complete license terms.
+
+The software is provided without warranty to the extent permitted by applicable law.
