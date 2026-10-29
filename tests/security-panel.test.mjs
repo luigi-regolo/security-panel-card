@@ -175,7 +175,7 @@ test('native entity selector can be cleared explicitly; arrays have remove icon'
 });
 test('font weight reduced for body but signature title and green point preserved',()=>{
   assert.match(code,/\.sp-name\{font-size:14px;font-weight:600/);
-  assert.match(code,/\.sp-title\{font-size:25px;line-height:1\.14;font-weight:780/);
+  assert.match(code,/\.sp-title\{font-size:23px;line-height:1\.14;font-weight:780/);
   assert.match(code,/\.sp-title b\{color:var\(--sp-accent\)/);
   assert.match(code,/\.sp-close\{display:flex;justify-content:center;align-items:center/);
 });
@@ -186,74 +186,51 @@ test('camera tile uses doorbell icon, not image entity native icon',()=>{
 });
 
 
-test('compact preview uses short NVR state and grouped icon/label layout',()=>{
-  assert.ok(code.includes("!cfg.nvr_state_entity?'Non monitorato'"));
+test('compact layout: NVR without a state entity shows "Stato non rilevato" and keeps both buttons',()=>{
+  assert.ok(code.includes("!cfg.nvr_state_entity?'Stato non rilevato'"));
+  assert.ok(!code.includes("'Non monitorato':nvr===null?(spKnown"));
+  assert.match(code,/const nvrDot=!cfg\.nvr_state_entity\?'unk'/);
+  assert.match(code,/\.sp-status\.unk\{background:transparent;box-shadow:inset 0 0 0 1\.5px/);
   assert.ok(code.includes('class="sp-device-info"'));
   assert.match(code,/\.sp-device-main\{display:flex;align-items:center;flex-wrap:wrap/);
-  assert.match(code,/\.sp-device-info \.sp-name,\.sp-device-info \.sp-sub\{[^}]*white-space:nowrap;overflow-wrap:normal/);
+});
+test('header summary never says everything is closed when data is missing',()=>{
+  assert.match(code,/missing=\[cfg\.alarm_entity&&!spKnown\(alarm\)/);
+  assert.match(code,/missing\?\{k:'warn'/);
+  assert.match(code,/alarmTriggered\?\{k:'crit',t:'Allarme scattato'/);
+  assert.match(code,/\(cfg\.door_entity\|\|cfg\.windows\.length\)\?\{k:'ok',t:'Tutto chiuso'/);
+  assert.match(code,/\.sp-chip\.warn\{background:var\(--sp-amber-bg\)/);
+});
+test('responsive layout relies on container queries, not on viewport width',()=>{
+  assert.match(code,/\.sp-cq\{container-type:inline-size\}/);
+  assert.match(code,/@container \(min-width:520px\)\{\.sp-devs\{grid-template-columns:repeat\(2/);
+  assert.match(code,/@container \(max-width:420px\)\{\.sp-sensor-main>\.sp-icon:last-child\{display:none\}/);
 });
 test('native MDI glyph aligns with button text via matching icon size',()=>{
   assert.match(code,/\.sp-button \.sp-icon\{width:16px;height:16px;--mdc-icon-size:16px\}/);
   assert.match(code,/\.sp-button\{[^}]*align-items:center;justify-content:center/);
 });
-
-test('door and windows tiles share the same height with motion and camera tiles',()=>{
-  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:12px\}/);
-  assert.match(code,/\.sp-sensor\{width:100%;text-align:left;min-width:0;/);
+test('sensor tiles are single-row, same height, and keep accessible detail labels',()=>{
+  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:8px\}/);
+  assert.match(code,/\.sp-sensor\{[^}]*min-height:58px/);
   assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
-});
-
-test('all sensor tiles show correctly labeled badges and only Spioncino is green',()=>{
-  assert.match(code,/info:'information-outline'/);
-  assert.match(code,/\.sp-detail-badge\{[^}]*background:var\(--sp-button\);color:var\(--sp-text\)/);
-  assert.match(code,/\.sp-camera-badge\{background:var\(--sp-accent\);color:#fff\}/);
-  assert.match(code,/\.sp-detail-badge \.sp-icon\{width:14px;height:14px/);
+  assert.match(code,/\.sp-sensor \.sp-name\{[^}]*white-space:normal;overflow-wrap:anywhere/);
+  assert.doesNotMatch(code,/\.sp-sensor \.sp-(name|sub)\{[^}]*text-overflow:ellipsis/);
   assert.match(code,/detailLabels=\{door:'Dettagli porta',windows:'Dettagli finestre',motion:'Dettagli movimento',camera:'Apri dettagli immagini'\}/);
-  assert.match(code,/sp-detail-badge \$\{camera\?'sp-camera-badge':'sp-neutral-badge'\}/);
   assert.match(code,/data-action="detail-\$\{k\}"/);
-  assert.match(code,/\$\{spIcon\('info'\)\}\$\{detailLabel\}<\/span><\/button>/);
-  assert.match(code,/if\(group==='camera'\)\{/);
-  assert.ok(!code.includes('<button class="sp-camera-badge"'));
-});
-
-test('all sensor tiles use the Spioncino shape and a shared content row',()=>{
-  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr/);
-  assert.match(code,/\.sp-sensor\{[^}]*border-radius:24px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between/);
-  assert.match(code,/const display=\(k,name,icon,text,highlight=false,entityId=''\)=>/);
-  assert.match(code,/<span class="sp-sensor-main"><span class="sp-sensor-orb">/);
-  assert.ok(!code.includes("camera?'<span"));
-  assert.match(code,/sp-detail-badge \$\{camera\?'sp-camera-badge':'sp-neutral-badge'\}/);
-  assert.match(code,/\.sp-sensor-main>\.sp-icon:last-child\{width:14px/);
-});
-test('only Spioncino has image badge; popup full-width action matches camera card icon and label',()=>{
-  assert.match(code,/info:'information-outline', expand:'arrow-expand'/);
-  assert.match(code,/sp-detail-badge \$\{camera\?'sp-camera-badge':'sp-neutral-badge'\}/);
+  assert.ok(!code.includes('sp-detail-badge'));
   assert.match(code,/data-more-info="\$\{spEscape\(cfg.image_entity\)\}">\$\{spIcon\('expand'\)\}Apri dettagli immagini<\/button>/);
   assert.match(code,/\.sp-wide \.sp-icon\{width:18px;height:18px;--mdc-icon-size:18px;margin-right:7px;color:#fff\}/);
-  assert.doesNotMatch(code,/>Dettagli immagine<\/button>/);
 });
-
-test('sensor titles and status wrap instead of being ellipsized on narrow phones',()=>{
-  assert.match(code,/\.sp-sensor \.sp-name\{[^}]*white-space:normal;overflow-wrap:anywhere/);
-  assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
-  assert.ok(code.includes('.sp-sensor .sp-name{font-size:11.5px}'));
-  assert.doesNotMatch(code,/\.sp-sensor \.sp-name\{[^}]*text-overflow:ellipsis/);
-  assert.doesNotMatch(code,/\.sp-sensor \.sp-sub\{[^}]*text-overflow:ellipsis/);
+test('alert highlight keeps a clear marker without hiding text contrast',()=>{
+  assert.match(code,/\.sp-sensor\.sp-focus \.sp-sensor-orb\{background:var\(--sp-accent\)\}/);
 });
-test('all four sensor badges share spacing while neutral badges never use accent green',()=>{
-  assert.doesNotMatch(code,/\.sp-detail-badge\{[^}]*min-height:40px/);
-  assert.match(code,/\.sp-detail-badge\{[^}]*border-radius:999px/);
-  assert.match(code,/\.sp-detail-badge\{[^}]*background:var\(--sp-button\);color:var\(--sp-text\)/);
-  assert.match(code,/\.sp-camera-badge\{background:var\(--sp-accent\);color:#fff\}/);
-  assert.ok(code.includes('.sp-detail-badge{font-size:10px;padding:5px 8px}'));
-});
-
-test('security tiles use camera-grid sizing without changing content or behavior',()=>{
-  assert.match(code,/\.sp-extras\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);grid-auto-rows:1fr;gap:12px\}/);
-  assert.match(code,/\.sp-sensor\{[^}]*padding:7px 10px;border-radius:24px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:2px;min-height:82px/);
-  assert.ok(code.includes('.sp-sensor{padding:7px 8px;gap:2px;min-height:77px}'));
-  assert.match(code,/\.sp-detail-badge\{[^}]*gap:5px;padding:5px 9px;max-width:100%/);
-  assert.doesNotMatch(code,/\.sp-detail-badge\{[^}]*min-height:/);
-  assert.match(code,/detailLabels=\{door:'Dettagli porta',windows:'Dettagli finestre',motion:'Dettagli movimento',camera:'Apri dettagli immagini'\}/);
-  assert.match(code,/data-action="detail-\$\{k\}"/);
+test('popup keeps a fixed header with title and X, a scrollable body and locks background scrolling',()=>{
+  assert.match(code,/\.sp-dialog\{[^}]*display:flex;flex-direction:column;overflow:hidden/);
+  assert.match(code,/\.sp-dialoghead\{flex:none;[^}]*border-bottom:1px solid var\(--sp-line\)/);
+  assert.match(code,/\.sp-dbody\{overflow-y:auto;overscroll-behavior:contain/);
+  assert.match(code,/\.sp-close\{[^}]*width:40px;height:40px;border-radius:50%/);
+  assert.match(code,/aria-labelledby="sp-mt"/);
+  assert.match(code,/_lockScroll\(\)/);
+  assert.match(code,/e\.preventDefault\(\)/);
 });

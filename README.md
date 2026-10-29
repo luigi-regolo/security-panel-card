@@ -17,10 +17,12 @@ The card uses entities and services already configured in Home Assistant. It is 
 ## Preview
 
 <p align="center">
-  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light preview" width="620" />
+  <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light preview" width="300" />
+  <img src="assets/security-panel-dark.png" alt="Security Panel Card — Edera Dark preview" width="300" />
+  <img src="assets/security-panel-popup.png" alt="Security Panel Card — windows details popup" width="300" />
 </p>
 
-*Security Panel Card in Edera Light mode. The preview uses demonstration values and does not display private installation data.*
+*Security Panel Card in Edera Light and Dark modes, and the windows details popup. The previews use demonstration values and do not display private installation data.*
 
 ## Features
 
@@ -28,17 +30,18 @@ The card uses entities and services already configured in Home Assistant. It is 
 - **Alarm history:** View the most recent confirmed triggered event found in the available Home Assistant history, including its date and time.
 - **Siren status:** Monitor an optional siren entity. Separate manual siren control can be enabled for a supported `siren.*` or `switch.*` entity, with confirmation before activation.
 - **Control panel status:** Display an optional status entity for the security system.
-- **Video surveillance:** Run separate Home Assistant scripts to enable or disable an NVR, with optional independent status monitoring.
+- **Video surveillance:** Run separate Home Assistant scripts to enable or disable cameras or an NVR. Without a status entity, the card shows "Stato non rilevato" and keeps both buttons available; with an optional status entity, it shows the current state and the relevant button.
 - **Smart lock:** Display lock status, optional battery information, and lock/unlock controls with optional confirmation or visual PIN.
 - **Doors and windows:** Monitor opening states, count open and closed windows, and inspect individual sensors.
 - **Motion sensors:** Display movement detected by configured sensors without automatically executing commands.
 - **Digital peephole:** Show the latest image from an `image.*` entity, optional battery level, recording status, and available movement information.
-- **Edera appearance:** Automatic, Light, and Dark themes, rounded elements, native Home Assistant icons, and responsive layouts.
+- **Summary at a glance:** A header indicator reports triggered alarms, unavailable data, open doors or windows, or that everything is closed.
+- **Edera appearance:** Automatic, Light, and Dark themes, a compact layout that adapts to the card width, rounded elements, and native Home Assistant icons.
 - **Visual configuration:** Configure supported entities, display options, and optional features through the dashboard editor.
 
-Alarm-triggered warnings are shown in red only when the alarm panel reports `triggered`. Active window and motion sensor states use the Edera green styling.
+Alarm-triggered warnings are shown in red only when the alarm panel reports `triggered`. Active door, window, and motion sensor states highlight the sensor icon in the Edera green.
 
-Missing or unavailable entity information is not treated as a confirmed safe state.
+Missing or unavailable entity information is not treated as a confirmed safe state, and the header summary reports it as unavailable data.
 
 ## Installation
 
@@ -112,7 +115,7 @@ This example keeps all real commands disabled.
 | `title` | Main card title. |
 | `alarm_entity` | Home Assistant alarm control panel entity. |
 | `nvr_on_script` / `nvr_off_script` | Optional NVR activation and deactivation scripts. |
-| `nvr_state_entity` | Optional independent NVR status entity. |
+| `nvr_state_entity` | Optional independent status entity for cameras or NVR, for example an input boolean updated by your scripts. |
 | `lock_entity` | Smart lock entity. |
 | `lock_battery_entity` | Optional lock battery sensor. |
 | `door_entity` | Optional door contact sensor. |
@@ -183,8 +186,6 @@ Unknown, unavailable, or missing information must not be interpreted as confirma
 ## Releases
 
 Published versions are available through [GitHub Releases](https://github.com/luigi-regolo/security-panel-card/releases).
-
-The release badge at the top of this README links to the latest published version.
 
 ## Copyright & License
 
