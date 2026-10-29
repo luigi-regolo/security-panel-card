@@ -19,10 +19,14 @@ The card uses entities and services already configured in Home Assistant. It is 
 <p align="center">
   <img src="assets/security-panel-light.png" alt="Security Panel Card — Edera Light preview" width="300" />
   <img src="assets/security-panel-dark.png" alt="Security Panel Card — Edera Dark preview" width="300" />
-  <img src="assets/security-panel-popup.png" alt="Security Panel Card — windows details popup" width="300" />
 </p>
 
-*Security Panel Card in Edera Light and Dark modes, and the windows details popup. The previews use demonstration values and do not display private installation data.*
+<p align="center">
+  <img src="assets/security-panel-alarm-light.png" alt="Security Panel Card — triggered alarm, Edera Light" width="300" />
+  <img src="assets/security-panel-alarm-dark.png" alt="Security Panel Card — triggered alarm, Edera Dark" width="300" />
+</p>
+
+*Security Panel Card in Edera Light and Dark modes, in normal operation and with a triggered alarm. The previews use demonstration values and do not display private installation data.*
 
 ## Features
 
