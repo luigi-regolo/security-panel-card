@@ -1,9 +1,8 @@
 # Security Panel Card
 
-[![TikTok | Segui](assets/tiktok-segui.svg)](https://www.tiktok.com/@luigi.regolo)
-[![Latest Release](https://img.shields.io/github/v/release/luigi-regolo/security-panel-card?style=flat-square&label=release)](https://github.com/luigi-regolo/security-panel-card/releases/latest)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-41BDF5?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luigi-regolo&repository=security-panel-card&category=plugin)
+[![Release](https://img.shields.io/github/v/release/luigi-regolo/security-panel-card?label=Release&style=flat-square)](https://github.com/luigi-regolo/security-panel-card/releases/latest)
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue?style=flat-square)](LICENSE)
-[![HACS](https://img.shields.io/badge/HACS-Repository-41BDF5?style=flat-square)](https://my.home-assistant.io/redirect/hacs_repository/?owner=luigi-regolo&repository=security-panel-card&category=plugin)
 [![GitHub Stars](https://img.shields.io/github/stars/luigi-regolo/security-panel-card?style=flat-square)](https://github.com/luigi-regolo/security-panel-card/stargazers)
 
 ## Overview
