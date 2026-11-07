@@ -1,9 +1,10 @@
 /**
- * Security Panel Card — Home Assistant dashboard card.
+ * Security Panel Card — Home Assistant dashboard card. Version 1.1
  * Copyright (c) 2026 luigi-regolo. SPDX-License-Identifier: GPL-3.0-only.
  * No external scripts, fonts, analytics or assets.
  * The optional lock PIN is a CLIENT-SIDE UI confirmation only, NOT access control.
  */
+const SP_VERSION = '1.1';
 const SP_TAG = 'security-panel-card';
 const SP_EDITOR_TAG = 'security-panel-card-editor';
 const SP_DOMAINS = {
