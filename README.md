@@ -152,7 +152,6 @@ Security Panel Card requires:
 
 - Home Assistant with support for custom JavaScript dashboard cards.
 - Compatible Home Assistant entities for the functions being configured.
-- Home Assistant 2026.11 or newer only when installing from the Marketplace.
 
 Supported entity domains include `alarm_control_panel`, `script`, `lock`, `siren`, `switch`, `image`, `binary_sensor`, and `sensor`, along with other compatible entities supported by individual settings.
 
