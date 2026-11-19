@@ -11,6 +11,8 @@
 
 It brings together alarm controls, video surveillance, smart locks, doors, windows, motion sensors, and digital peephole information in a single dashboard card.
 
+The card is modular: video surveillance, smart lock, door, windows, motion sensors and digital peephole can each be turned on or off and placed in the order you prefer. It is available in Italian, English, German and French.
+
 The card uses entities and services already configured in Home Assistant. It is not tied to a specific device manufacturer and does not require a dedicated account, paid API, or subscription.
 
 ## Preview
@@ -25,7 +27,11 @@ The card uses entities and services already configured in Home Assistant. It is 
   <img src="assets/security-panel-alarm-dark.png" alt="Security Panel Card — triggered alarm, Edera Dark" width="300" />
 </p>
 
-*Security Panel Card in Edera Light and Dark modes, in normal operation and with a triggered alarm. The previews use demonstration values and do not display private installation data.*
+<p align="center">
+  <img src="assets/security-panel-languages.png" alt="Security Panel Card — Italian, English, German and French" width="620" />
+</p>
+
+*Security Panel Card in Edera Light and Dark modes, in normal operation and with a triggered alarm, and in its four languages (Italian, English, German and French). The previews use demonstration values and do not display private installation data.*
 
 ## Features
 
@@ -33,14 +39,18 @@ The card uses entities and services already configured in Home Assistant. It is 
 - **Alarm history:** View the most recent confirmed triggered event found in the available Home Assistant history, including its date and time.
 - **Siren status:** Monitor an optional siren entity. Separate manual siren control can be enabled for a supported `siren.*` or `switch.*` entity, with confirmation before activation.
 - **Control panel status:** Display an optional status entity for the security system.
-- **Video surveillance:** Run separate Home Assistant scripts to enable or disable cameras or an NVR. Without a status entity, the card shows "Stato non rilevato" and keeps both buttons available; with an optional status entity, it shows the current state and the relevant button.
+- **Video surveillance:** Run separate Home Assistant scripts to enable or disable cameras or an NVR. Without a status entity, the card shows "State not detected" and keeps both buttons available; with an optional status entity, it shows the current state and the relevant button.
 - **Smart lock:** Display lock status, optional battery information, and lock/unlock controls with optional confirmation or visual PIN.
 - **Doors and windows:** Monitor opening states, count open and closed windows, and inspect individual sensors.
 - **Motion sensors:** Display movement detected by configured sensors without automatically executing commands.
 - **Digital peephole:** Show the latest image from an `image.*` entity, optional battery level, recording status, and available movement information.
 - **Summary at a glance:** A header indicator reports triggered alarms, unavailable data, open doors or windows, or that everything is closed.
+- **Modules:** The alarm panel, video surveillance, smart lock, door, windows, motion sensors and digital peephole are independent. Turn each one on or off and reorder them with the arrows in the editor. A card can use a single module.
+- **Code keypad:** The alarm code and the optional lock PIN are typed on a numeric keypad. Alarm codes in text format use a password field. A code is typed every time and is never stored in the card or in its settings.
+- **Languages:** Italian, English, German and French. The language follows the Home Assistant user, or you can choose one in the editor. When the card language is the language of the Home Assistant user, entity states are taken from the Home Assistant translations when available. Every other text is shown in English if the language is not one of the four.
+- **Header:** The top label and the title can be edited or hidden independently.
 - **Edera appearance:** Automatic, Light, and Dark themes, a compact layout that adapts to the card width, rounded elements, and native Home Assistant icons.
-- **Visual configuration:** Configure supported entities, display options, and optional features through the dashboard editor.
+- **Visual configuration:** Choose entities with the native Home Assistant selectors in the dashboard editor.
 
 Alarm-triggered warnings are shown in red only when the alarm panel reports `triggered`. Active door, window, and motion sensor states highlight the sensor icon in the Edera green.
 
@@ -78,50 +88,11 @@ If the `www` directory was newly created, Home Assistant may require a restart b
 
 Open a dashboard in edit mode, add **Security Panel Card**, and configure the available sections:
 
-- **Alarm:** Alarm panel entity, optional siren and control panel status, and alarm code options.
-- **Video Surveillance:** Activation and deactivation scripts, optional NVR status entity, and expected active state.
-- **Smart Lock:** Lock entity, battery sensor, confirmation behavior, and optional visual PIN.
-- **Sensors:** Door, windows, motion sensors, and digital peephole entities.
-- **Appearance:** Card title, display names, Edera theme, and visual state highlighting.
-- **Advanced:** Real command permissions and optional attention animations.
+- **Alarm:** The alarm panel entity, whether to show the panel, the real commands, the alarm code options, the optional siren (with separate manual control) and control panel status.
+- **Modules:** Video surveillance, smart lock, door, windows, motion sensors and digital peephole. For each module: whether it is shown, its entities, an optional name and its position.
+- **Appearance:** Top label, title, a switch for each of them, theme, language, event highlighting and attention animations.
 
-The editor uses native Home Assistant entity selectors where available. Entities can be cleared individually, and configured window or motion sensor rows can be removed separately.
-
-No YAML configuration is required for normal setup.
-
-### Example YAML configuration
-
-```yaml
-type: custom:security-panel-card
-theme_mode: auto
-alarm_entity: alarm_control_panel.example
-controls_enabled: false
-```
-
-Replace `alarm_control_panel.example` with an actual alarm panel entity from your Home Assistant installation.
-
-This example keeps all real commands disabled.
-
-### Main configuration options
-
-| Option | Description |
-|---|---|
-| `theme_mode` | `auto`, `light`, or `dark`. |
-| `title` | Main card title. |
-| `alarm_entity` | Home Assistant alarm control panel entity. |
-| `nvr_on_script` / `nvr_off_script` | Optional NVR activation and deactivation scripts. |
-| `nvr_state_entity` | Optional independent status entity for cameras or NVR, for example an input boolean updated by your scripts. |
-| `lock_entity` | Smart lock entity. |
-| `lock_battery_entity` | Optional lock battery sensor. |
-| `door_entity` | Optional door contact sensor. |
-| `windows` / `motion` | Lists of window and motion sensors. |
-| `image_entity` | Digital peephole's latest image entity. |
-| `recording_entity` | Optional independent recording status entity. |
-| `controls_enabled` | Enables real commands; disabled by default. |
-| `siren_manual_enabled` | Optional manual siren control, separately configured. |
-| `alert_animation` | Optional attention animations. |
-
-Additional settings are available in the visual editor.
+The editor uses native Home Assistant entity selectors, with multiple selection for windows and motion sensors.
 
 ### Enabling real commands
 
@@ -130,13 +101,12 @@ Additional settings are available in the visual editor.
 To enable supported controls:
 
 1. Open the dashboard editor and select Security Panel Card.
-2. Open **Advanced** (`Avanzate`).
-3. Enable **Real Commands** (`Abilita i comandi reali`).
-4. Verify the selected entities before using any command.
+2. In **Alarm**, turn on **Enable real commands**.
+3. Verify the selected entities before using any command.
 
 These settings do not grant additional Home Assistant permissions.
 
-Manual siren control must also be enabled separately under **Alarm → More options**, with a supported controllable entity selected. Activating the siren requires explicit confirmation.
+Manual siren control must also be enabled separately in **Alarm** with **Allow manual siren control**, with a supported controllable entity selected. Activating the siren requires explicit confirmation.
 
 ### Optional visual lock PIN
 

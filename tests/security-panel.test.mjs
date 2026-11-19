@@ -14,8 +14,9 @@ const context={
 };
 context.globalThis=context;
 vm.createContext(context);
-vm.runInContext(code+'\nglobalThis.__test={spConfig,spEntity,spList,spKnown,spSensorState,spPercent,spStateLabel,spEscape,spPinMake,spPinCheck,spImageUrl,spTimeInfo,spLatestActive,spLatestTransition,spIcon,spStateIcon};',context);
+vm.runInContext(code+'\nglobalThis.__test={spConfig,spEntity,spList,spKnown,spSensorState,spPercent,spStateLabel,spEscape,spPinMake,spPinCheck,spImageUrl,spTimeInfo,spLatestActive,spLatestTransition,spIcon,spStateIcon,SP_STR,SP_LANGS,SP_MOD_ORDER,SP_MOD_FLAG,T,TP,spPickLang,spName,setLang:l=>{SP_CUR=l;}};',context);
 const f=context.__test;
+f.setLang('it'); // the existing checks below use the Italian texts
 
 test('card and editor register once with correct picker metadata',()=>{
   assert.ok(els.has('security-panel-card'));
@@ -113,9 +114,9 @@ test('only active Casa/Fuori casa buttons are tinted, alarm body stays neutral',
 });
 test('triggered alarm gets a separate red alert only on triggered state',()=>{
   assert.match(code, /alarmTriggered=aState==='triggered'/);
-  assert.match(code, /\$\{alarmTriggered\?`<section class="sp-trigger-alert"/);
+  assert.match(code, /alarmBanner=alarmTriggered\?`<section class="sp-trigger-alert"/);
   assert.match(code, /role="alert" aria-live="polite"/);
-  assert.match(code, /<strong>Allarme scattato<\/strong>/);
+  assert.match(code, /<strong>\$\{T\('trig_t'\)\}<\/strong>/);
   assert.match(code, /\.sp-row\.sp-alarm-triggered\{border-color:#b83a42/);
   assert.doesNotMatch(code,/alarmTriggered\|\|sirenState===true\?'sp-alarm-triggered'/);
 });
@@ -124,7 +125,7 @@ test('recording remains separately configurable and visible beside last movement
   const cfg=f.spConfig({recording_entity:'binary_sensor.door_recording',recording_active_state:'on',image_entity:'image.frontdoor'});
   assert.equal(cfg.recording_entity,'binary_sensor.door_recording');
   assert.match(code,/Stato registrazione \(facoltativo\)/);
-  assert.match(code,/<strong>Stato registrazione<\/strong>/);
+  assert.match(code,/<strong>\$\{T\('cam_rec'\)\}<\/strong>/);
   assert.match(code,/Ultimo movimento rilevato/);
   assert.match(code,/Ultima immagine rilevata \(image\.\*\)/);
 });
@@ -168,26 +169,31 @@ test('history queries include explicit end_time for full interval',()=>{
   assert.match(code,/spLatestTransition\(history,'triggered',from\)/);
   assert.match(code,/data-action="detail-alarm-history"/);
 });
-test('native entity selector can be cleared explicitly; arrays have remove icon',()=>{
-  assert.match(code,/data-clear-entity="\$\{key\}"/);
-  assert.match(code,/this\._update\(clear\.dataset\.clearEntity,''\)/);
-  assert.match(code,/class="sp-remove sp-remove-x"/);
+test('editor uses native selectors (single and multiple) mounted like Alarm Keeper, without custom clear buttons',()=>{
+  assert.match(code,/el\.selector=\{entity:\{domain:ds\.length===1\?ds\[0\]:ds,\.\.\.\(multi\?\{multiple:true\}:\{\}\)\}\}/);
+  assert.ok(!/data-clear-entity|sp-remove-x|sp-more/.test(code));
+});
+test('eyebrow and title can be hidden',()=>{
+  assert.match(code,/show_eyebrow: true, show_title: true/);
+  assert.match(code,/this\._check\('show_eyebrow'/);
+  assert.match(code,/this\._check\('show_title'/);
+  assert.match(code,/cfg\.show_eyebrow\?`<div class="sp-eyebrow"/);
 });
 test('font weight reduced for body but signature title and green point preserved',()=>{
   assert.match(code,/\.sp-name\{font-size:14px;font-weight:600/);
-  assert.match(code,/\.sp-title\{font-size:23px;line-height:1\.14;font-weight:780/);
+  assert.match(code,/\.sp-title\{font-size:25px;line-height:1.14;font-weight:780/);
   assert.match(code,/\.sp-title b\{color:var\(--sp-accent\)/);
   assert.match(code,/\.sp-close\{display:flex;justify-content:center;align-items:center/);
 });
 test('camera tile uses doorbell icon, not image entity native icon',()=>{
   assert.match(code,/eye:'doorbell-video'/);
-  assert.match(code,/extras\+=display\('camera'/);
+  assert.match(code,/tiles\.camera=display\('camera'/);
   assert.doesNotMatch(code,/cameraMotion===true\|\|cameraPerson===true\|\|record===true,cfg\.image_entity\)/);
 });
 
 
 test('compact layout: NVR without a state entity shows "Stato non rilevato" and keeps both buttons',()=>{
-  assert.ok(code.includes("!cfg.nvr_state_entity?'Stato non rilevato'"));
+  assert.ok(code.includes("!cfg.nvr_state_entity?T('nvr_none')"));
   assert.ok(!code.includes("'Non monitorato':nvr===null?(spKnown"));
   assert.match(code,/const nvrDot=!cfg\.nvr_state_entity\?'unk'/);
   assert.match(code,/\.sp-status\.unk\{background:transparent;box-shadow:inset 0 0 0 1\.5px/);
@@ -195,10 +201,10 @@ test('compact layout: NVR without a state entity shows "Stato non rilevato" and 
   assert.match(code,/\.sp-device-main\{display:flex;align-items:center;flex-wrap:wrap/);
 });
 test('header summary never says everything is closed when data is missing',()=>{
-  assert.match(code,/missing=\[cfg\.alarm_entity&&!spKnown\(alarm\)/);
+  assert.match(code,/missing=\[cfg\.show_alarm&&cfg\.alarm_entity&&!spKnown\(alarm\)/);
   assert.match(code,/missing\?\{k:'warn'/);
-  assert.match(code,/alarmTriggered\?\{k:'crit',t:'Allarme scattato'/);
-  assert.match(code,/\(cfg\.door_entity\|\|cfg\.windows\.length\)\?\{k:'ok',t:'Tutto chiuso'/);
+  assert.match(code,/alarmTriggered\?\{k:'crit',t:T\('sum_trig'\)/);
+  assert.match(code,/cfg\.show_windows&&cfg\.windows\.length\)\)\?\{k:'ok',t:T\('sum_ok'\)/);
   assert.match(code,/\.sp-chip\.warn\{background:var\(--sp-amber-bg\)/);
 });
 test('responsive layout relies on container queries, not on viewport width',()=>{
@@ -216,10 +222,10 @@ test('sensor tiles are single-row, same height, and keep accessible detail label
   assert.match(code,/\.sp-sensor \.sp-sub\{[^}]*white-space:normal;overflow-wrap:anywhere/);
   assert.match(code,/\.sp-sensor \.sp-name\{[^}]*white-space:normal;overflow-wrap:anywhere/);
   assert.doesNotMatch(code,/\.sp-sensor \.sp-(name|sub)\{[^}]*text-overflow:ellipsis/);
-  assert.match(code,/detailLabels=\{door:'Dettagli porta',windows:'Dettagli finestre',motion:'Dettagli movimento',camera:'Apri dettagli immagini'\}/);
+  assert.match(code,/detailLabels=\{door:T\('d_door'\),windows:T\('d_windows'\),motion:T\('d_motion'\),camera:T\('d_camera'\)\}/);
   assert.match(code,/data-action="detail-\$\{k\}"/);
   assert.ok(!code.includes('sp-detail-badge'));
-  assert.match(code,/data-more-info="\$\{spEscape\(cfg.image_entity\)\}">\$\{spIcon\('expand'\)\}Apri dettagli immagini<\/button>/);
+  assert.match(code,/data-more-info="\$\{spEscape\(cfg.image_entity\)\}">\$\{spIcon\('expand'\)\}\$\{T\('d_camera'\)\}<\/button>/);
   assert.match(code,/\.sp-wide \.sp-icon\{width:18px;height:18px;--mdc-icon-size:18px;margin-right:7px;color:#fff\}/);
 });
 test('alert highlight keeps a clear marker without hiding text contrast',()=>{
@@ -233,4 +239,61 @@ test('popup keeps a fixed header with title and X, a scrollable body and locks b
   assert.match(code,/aria-labelledby="sp-mt"/);
   assert.match(code,/_lockScroll\(\)/);
   assert.match(code,/e\.preventDefault\(\)/);
+});
+
+test('every text exists in Italian, English, German and French with the same placeholders',()=>{
+  assert.deepEqual(Array.from(f.SP_LANGS,l=>l[0]),['it','en','de','fr']);
+  const ph=t=>(t.match(/\{\w+\}/g)||[]).sort().join(',');
+  for(const [key,row] of Object.entries(f.SP_STR)){
+    assert.equal(row.length,4,key);
+    row.forEach(t=>assert.ok(typeof t==='string'&&t.length>0,key));
+    if(!key.startsWith('nd')&&key!=='rec')for(let i=1;i<4;i++)assert.equal(ph(row[i]),ph(row[0]),`${key} placeholders (${i})`);
+  }
+});
+test('language follows Home Assistant, can be forced, and falls back to English',()=>{
+  assert.equal(f.spPickLang('auto',{locale:{language:'de'}}),'de');
+  assert.equal(f.spPickLang('auto',{language:'fr-CA'}),'fr');
+  assert.equal(f.spPickLang('auto',{locale:{language:'es'}}),'en');
+  assert.equal(f.spPickLang('it',{locale:{language:'de'}}),'it');
+  assert.equal(f.spPickLang('auto',null),'en');
+  f.setLang('en');assert.equal(f.T('b_unlock'),'Unlock');assert.equal(f.TP('t_h',3),'3 hours ago');
+  f.setLang('de');assert.equal(f.T('b_lock'),'Verriegeln');
+  f.setLang('fr');assert.equal(f.T('b_lock'),'Verrouiller');
+  f.setLang('it');assert.equal(f.T('b_lock'),'Blocca');
+});
+test('an old saved Italian default name follows the language, a custom name does not',()=>{
+  f.setLang('en');
+  assert.equal(f.spName(f.spConfig({alarm_name:'Allarme'}),'alarm_name'),'Alarm');
+  assert.equal(f.spName(f.spConfig({}),'title'),'Security');
+  assert.equal(f.spName(f.spConfig({lock_name:'Portone'}),'lock_name'),'Portone');
+  f.setLang('it');
+});
+test('modules: all visible by default as before, order is normalised and nothing is lost',()=>{
+  const cfg=f.spConfig({});
+  assert.deepEqual(Array.from(cfg.order),['nvr','lock','door','windows','motion','camera']);
+  assert.equal(cfg.show_alarm,true);assert.equal(cfg.show_nvr,true);assert.equal(cfg.show_lock,true);
+  assert.equal(cfg.show_door,false);
+  assert.deepEqual(Array.from(f.spConfig({order:['camera','x','camera','door']}).order),['camera','door','nvr','lock','windows','motion']);
+  assert.equal(f.spConfig({show_nvr:false}).show_nvr,false);
+  assert.equal(f.spConfig({language:'xx'}).language,'auto');
+  assert.equal(f.spConfig({language:'fr'}).language,'fr');
+});
+test('keypad: digits only, delete next to zero, no raw tap highlight, code never stored',()=>{
+  assert.match(code,/_keypad\(\)\{/);
+  assert.match(code,/\['1','2','3','4','5','6','7','8','9'\]\.map\(key\)\.join\(''\)\}<span><\/span>\$\{key\('0'\)\}<button type="button" class="sp-bk" data-key="del"/);
+  assert.ok(!code.includes('⌫'));
+  assert.match(code,/\*\{-webkit-tap-highlight-color:transparent\}/);
+  assert.match(code,/const v=this\._textCode\(\)\?\(this\.shadowRoot\.querySelector\('\[data-alarm-code\]'\)\?\.value\|\|''\):this\._pin;/);
+  assert.ok(!/localStorage|sessionStorage/.test(code));
+});
+test('errors overlay the card instead of lengthening it',()=>{
+  assert.match(code,/\.sp-toast\{position:absolute/);
+  assert.match(code,/\.sp-shell\{position:relative/);
+  assert.match(code,/class="sp-toast" role="alert"/);
+});
+test('editor has Alarm, Modules and Appearance sections like Alarm Keeper and Door Latch with reorderable modules and a language choice',()=>{
+  assert.match(code,/\['allarme',T\('t_alarm'\)\],\['moduli',T\('t_modules'\)\],\['aspetto',T\('t_look'\)\]/);
+  assert.match(code,/data-move="\$\{i\}:-1"/);
+  assert.match(code,/data-choice="language"/);
+  assert.ok(!/Aspetto Edera|Aspect Edera/.test(code));
 });
